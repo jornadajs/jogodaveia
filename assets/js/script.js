@@ -1,7 +1,15 @@
 let container = document.querySelector(".container");
+let turn = true;
 
 const getclick = ({ target }) => {
-  console.log(target);
+  if (turn) {
+    target.firstChild.classList = "show";
+    turn = !turn;
+  } else {
+    target.lastChild.classList = "show";
+    turn = true;
+  }
+  console.log(turn);
 };
 
 const createstagegame = () => {
