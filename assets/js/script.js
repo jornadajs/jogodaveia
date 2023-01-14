@@ -1,53 +1,105 @@
 let container = document.querySelector(".container");
+let gramma = document.querySelector(".box_gramma img");
+let trophy = document.querySelector(".box_trophy");
+let playermoves = ["", "", "", "", "", "", "", "", ""];
+let risk = document.querySelector(".risk");
 let turn = true;
-let playclick = ["", "", "", "", "", "", "", "", ""];
+let endgame = false;
 
-const getclick = ({ target }) => {
-  if (turn) {
-    target.firstChild.classList = "show";
-    playclick[target.id] = turn ? "X" : "O";
-    turn = !turn;
-  } else {
-    target.lastChild.classList = "show";
-    playclick[target.id] = !turn ? "O" : "X";
-    turn = true;
+let posibilities = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6],
+];
+const drawinner = (c) => {
+  let line = document.createElement("div");
+  line.className = "line";
+  switch (Number(c)) {
+    case 0:
+      line.style.transform = "translateY(-100px)";
+      break;
+    case 1:
+      line.style.transform = "translateY(-15px)";
+      break;
+    case 2:
+      line.style.transform = "translateY(60px)";
+      break;
+    case 3:
+      line.style.transform = "rotate(90deg)";
+      line.style.marginRight = "100px";
+      break;
+    case 4:
+      line.style.transform = "rotate(90deg)";
+      break;
+    case 5:
+      line.style.transform = "rotate(90deg)";
+      line.style.marginLeft = "100px";
+      break;
+    case 6:
+      line.style.transform = "rotate(57deg)";
+      line.style.marginLeft = "15px";
+      break;
+    case 7:
+      line.style.transform = "rotate(-57deg)";
+      line.style.marginRight = "20px";
+      break;
   }
 
-  let amostra = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-  ];
+  risk.appendChild(line);
+};
+const fendgame = (target) => {
+  switch (target) {
+    case "w":
+      endgame = true;
+      gramma.src = "/assets/images/grammasuperhappy.png";
+      trophy.classList.add("show");
+  }
+};
+const alertwinner = (target, c) => {
+  setTimeout(function () {
+    fendgame("w");
+    drawinner(c);
+    alert(target + " venceu");
+  }, 10);
+};
+const checkwinner = (target) => {
+  for (i in posibilities) {
+    let moves =
+      playermoves[posibilities[i][0]] == target &&
+      playermoves[posibilities[i][1]] == target &&
+      playermoves[posibilities[i][2]] == target
+        ? alertwinner(target, i)
+        : null;
+  }
+  setTimeout(function () {
+    if (playermoves.indexOf("") === -1) {
+      gramma.src = "/assets/images/grammangry.png";
+      alert("deu velha!");
+    }
+  }, 10);
+};
 
-  let moves =
-    (playclick[0] === "X" && playclick[1] === "X" && playclick[2] === "X") ||
-    (playclick[0] === "O" && playclick[1] === "O" && playclick[2] === "O") ||
-    (playclick[3] === "X" && playclick[4] === "X" && playclick[5] === "X") ||
-    (playclick[3] === "O" && playclick[4] === "O" && playclick[5] === "O") ||
-    (playclick[6] === "X" && playclick[7] === "X" && playclick[8] === "X") ||
-    (playclick[6] === "O" && playclick[7] === "O" && playclick[8] === "O") ||
-    (playclick[0] === "X" && playclick[3] === "X" && playclick[6] === "X") ||
-    (playclick[0] === "O" && playclick[3] === "O" && playclick[6] === "O") ||
-    (playclick[1] === "X" && playclick[4] === "X" && playclick[7] === "X") ||
-    (playclick[1] === "O" && playclick[4] === "O" && playclick[7] === "O") ||
-    (playclick[2] === "X" && playclick[5] === "X" && playclick[8] === "X") ||
-    (playclick[2] === "O" && playclick[5] === "O" && playclick[8] === "O") ||
-    (playclick[0] === "X" && playclick[4] === "X" && playclick[8] === "X") ||
-    (playclick[0] === "O" && playclick[4] === "O" && playclick[8] === "O") ||
-    (playclick[2] === "X" && playclick[4] === "X" && playclick[6] === "X") ||
-    (playclick[2] === "O" && playclick[4] === "O" && playclick[6] === "O")
-      ? true
-      : false;
-
-  if (moves) {
-    if (!turn) {
-      setTimeout(function () {
-        alert("x venceu");
-      }, 10);
+const getclick = ({ target }) => {
+  if (!endgame) {
+    if (turn) {
+      if (!playermoves[target.id]) {
+        target.firstChild.classList.add("show");
+        playermoves[target.id] = turn ? "X" : "O";
+        checkwinner(playermoves[target.id]);
+        turn = !turn;
+      }
     } else {
-      setTimeout(function () {
-        alert("0 venceu");
-      }, 10);
+      if (!playermoves[target.id]) {
+        target.lastChild.classList.add("show");
+        playermoves[target.id] = !turn ? "O" : "X";
+        checkwinner(playermoves[target.id]);
+        turn = true;
+      }
     }
   }
 };
